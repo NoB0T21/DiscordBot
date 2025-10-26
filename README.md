@@ -45,7 +45,7 @@ cd discord-gemini-transcriber
 npm install
 ```
 
-### 3. Create a `.env` file
+### 3. Bot Permission
 
 ```bash
 speak
@@ -56,7 +56,7 @@ Read Message
 send Message History
 ```
 
-### 3. Bot Permission
+### 3. Create a `.env` file
 
 ```bash
 DISCORD_TOKEN=your_discord_bot_token

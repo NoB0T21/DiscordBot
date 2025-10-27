@@ -45,8 +45,8 @@ export const botJoinVC = (message) => {
 }
 
 export const botStopRec = async (message) => {
-    if (userStreams.size === 0) return message.reply('No recordings in progress.');
-        message.reply('Stopping recordings and preparing audio for Gemini...');
+    if (userStreams.size === 0) return message.reply('🔴 No recordings in progress.');
+        message.reply('⛔Stopping recordings and ⚙ preparing audio for Gemini...');
 
         const connection = getVoiceConnection(message.guild.id);
 
@@ -66,13 +66,13 @@ export const botStopRec = async (message) => {
                 recordings.push({ pcmFile: filePath, wavFile, username });
                 conversionPromises.push(convertToWav(filePath, wavFile));
             } else {
-                console.warn(`Skipping user ${username} (ID: ${userId}) due to missing filePath.`);
+                console.warn(`🐛Skipping user ${username}🙍🏼‍♂️ (🆔: ${userId}) due to missing filePath.`);
             }
         }
 
         try {
             await Promise.all(conversionPromises);
-            message.reply('All audio converted. Uploading to Gemini...');
+            message.reply('🔄 All audio converted. ☁ Uploading to Gemini...');
 
             const uploadedFiles = [];
             
@@ -84,15 +84,15 @@ export const botStopRec = async (message) => {
                         uploadedFiles.push(...parts);
                         validAudioFiles++;
                     }else {
-                        message.reply(`Skipping empty or missing file ${rec.wavFile} for ${rec.username}`);
+                        message.reply(`🗑 Skipping empty or missing file ${rec.wavFile} for ${rec.username}🙍🏼‍♂️`);
                     }
                 }catch (uploadError) {
-                    message.channel.send(`⚠️ Failed to upload audio for ${rec.username}.`);
+                    message.channel.send(`⚠️ Failed to upload audio for ${rec.username}🙍🏼‍♂️.`);
                 }
             }
             
             if (uploadedFiles.length === 0) {
-                return message.reply('No audio files were successfully uploaded. Cannot transcribe.');
+                return message.reply('⚠ No audio files were successfully uploaded. Cannot transcribe.');
             }
 
             const prompt = promptText(uploadedFiles)
@@ -112,13 +112,13 @@ export const botStopRec = async (message) => {
 
             // Save transcription per user
             const res = WriteFile(response);
-            message.channel.send(`Transcription complete! Saved to \`${path.basename(res.transcriptFile)}\``);
+            message.channel.send(`✔ Transcription complete! Saved to \`${path.basename(res.transcriptFile)}\``);
         
             // Send the transcription to the channel if it's not too long
             if (res.transcriptionText.length < 2000) {
                 message.channel.send("```\n" + res.transcriptionText + "\n```");
             } else {
-                message.channel.send("The transcript is too long to display here.");
+                message.channel.send("The transcript is too long to display here😪.");
             }
         } catch (err) {
             message.channel.send('❌ An error occurred while processing the recordings.');
@@ -128,7 +128,7 @@ export const botStopRec = async (message) => {
             // Add a check to prevent crash if pcmFile path is bad
             if (rec.pcmFile) {
                 // This line deletes the original .pcm file
-                fs.unlink(rec.pcmFile, (e) => e && console.error(`Failed to delete pcm: ${e.message}`));
+                fs.unlink(rec.pcmFile, (e) => e && console.error(`🚫 Failed to delete pcm: ${e.message}`));
             }
         }
         if (connection) {

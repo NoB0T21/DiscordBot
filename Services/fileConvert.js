@@ -12,7 +12,6 @@ export function convertToWav(pcmPath, wavPath) {
 
         ffmpeg.on('exit', (code) => {
             if (code === 0) {
-                console.log(`Successfully converted ${pcmPath} to ${wavPath}`);
                 resolve(wavPath);
             } else {
                 reject(new Error(`FFMPEG exited with code ${code}`));

@@ -44,6 +44,16 @@ function startRecording(userId, username, receiver) {
 
     const filePath = path.join(recordingsDir, `${username}-${userId}-${Date.now()}.pcm`);
     const pcmStream = new prism.opus.Decoder({ frameSize: 960, channels: 2, rate: 48000 });
+
+    // prevent crashes from invalid/corrupt opus frames
+    pcmStream.on('error', (err) => {
+        console.warn(`Decoder error for ${username}: ${err.message}`);
+    });
+
+    audioStream.on('error', (err) => {
+        console.warn(`Audio stream error for ${username}: ${err.message}`);
+    });
+
     const writeStream = fs.createWriteStream(filePath);
     audioStream.pipe(pcmStream).pipe(writeStream);
 
@@ -132,9 +142,9 @@ client.on('messageCreate', async (message) => {
                     for (const rec of recordings) {
                         const myfile = await ai.files.upload({
                             file: rec.wavFile,
-                            config: { mimeType: 'audio/wav' }
+                            config: { mimeType: 'audio/wav', timeout: 60000 }
                         });
-                        uploadedFiles.push({ uri: myfile.uri, mimeType: myfile.mimeType, username: rec.username });
+                        uploadedFiles.push({ uri: myfile.uri, mimeType: myfile.mimeType, username: rec.username, timeout: rec.timeout });
                     }
 
                     // Upload to Gemini
@@ -181,7 +191,7 @@ client.on('messageCreate', async (message) => {
                     const response = await ai.models.generateContent({
                         model: 'gemini-2.5-flash',
                         contents: createUserContent([
-                            ...uploadedFiles.map((f) => createPartFromUri(f.uri, f.mimeType)),
+                            ...uploadedFiles.map((f) => createPartFromUri(f.uri, f.mimeType, f.timeout)),
                             prompt
                         ])
                     });

@@ -24,3 +24,23 @@ export const WriteFile = (response) => {
     }
     return res;
 }
+
+export const WriteJsonFile = (response) => {
+    const transcriptsDir = path.join(__dirname,'../assect', 'JSONL');
+    fs.mkdirSync(transcriptsDir, { recursive: true });
+
+    const transcriptFile = path.join(transcriptsDir, `transcript-${Date.now()}.jsonl`);
+    const transcriptionText = response.text || (response.candidates && response.candidates[0]?.content?.parts[0]?.text);
+
+    if (!transcriptionText) {
+        throw new Error("No text was returned from Gemini.");
+    }
+    
+    fs.writeFileSync(transcriptFile, transcriptionText, 'utf8');
+
+    const res ={
+        transcriptFile,
+        transcriptionText,
+    }
+    return res;
+}

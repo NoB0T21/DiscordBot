@@ -1,35 +1,60 @@
 export const userStreams = new Map();
 
 export const promptText = (uploadedFiles) => {
-    return `Transcribe the provided audio into a dialogue format.
-    Each audio file belongs to a single user. Use the following mapping:
-    ${uploadedFiles.map(f => `${f.username}: ${f.uri}`).join('\n')}.
-    using the actual Discord usernames of the participants. 
-    For each speaker, label their lines with their Discord username followed by a colon. 
-    Do not include timestamps, technical metadata, or any extra commentary. 
-    Only include what was said, formatted as a readable conversation. 
-    Use only the exact Discord usernames (e.g., "${uploadedFiles.map(f => f.username).join('", "')}")
+    return `Transcribe all provided audio files into clean, structured text for AI voice training.
 
-    Ensure the conversation flows naturally.
+Each audio file corresponds to one specific Discord user:
+${uploadedFiles.map(f => `${f.username}: ${f.uri}`).join('\n')}
 
-    Rules:
-    1. Use only the exact Discord usernames provided by the bot metadata for each speaker (for example: "siddharth", "aryan").
-    2. Do NOT invent or modify usernames (no numbers like siddharth_86386 or aryan_87259).
-    3. Format: \`username: text\`
-    4. Only include the spoken text (no timestamps, no explanations, no apologies, no extra text).
-    5. If a username is missing in the metadata, use a generic label like "UnknownUser" instead of inventing one.
-    6. Transcribe ONLY the actual spoken words from the provided audio segments.
-    7. Do NOT include timestamps, metadata, explanations, or any extra text.
-    8. Maintain a natural, readable dialogue structure.
-    9. Do NOT generate, imagine, or complete any sentences that are not clearly spoken.
-    10. Use only the exact Discord usernames from the metadata (for example: "aryan", "siddharth").
-    11. Combine all audio segments in their correct chronological order and create ONE single dialogue transcript.
-    12. Do NOT split the output into multiple files or sections.
-    13.If any part of the audio is unclear or silent, write “[inaudible]” instead of guessing.
-    14. using all audios provided, create one single dialogue transcript.
-    15. donot mess up with different audioi file use audio like if aryan.wav use for aryan only and siddhart.wav for siddharth only donot us aryan.wav audio in siddhart text this is important.
-    16. if user is not speaking in audio donot include them in transcript,if he speak in future only then on that timestamp include him.
+Instructions:
+
+1. Each line must begin with the exact Discord username followed by a colon and a space.  
+   Example: aryan: Hello everyone!
+2. Use only the provided usernames (for example: "${uploadedFiles.map(f => f.username).join('", "')}").
+3. Combine all audio segments chronologically into one transcript.
+4. Do not include timestamps, punctuation beyond normal conversational grammar, metadata, or explanations.
+5. Only include clearly spoken words. If any part is unclear, write “[inaudible]”.
+6. Maintain a natural conversation flow — alternate lines based on who is speaking.
+7. Do NOT add, guess, or complete missing words or phrases.
+8. Each user should only have text derived from their own audio (e.g., aryan.wav → aryan’s text only).
+9. If a user is silent in a given audio, skip them until they speak.
+10. Output format should be plain text suitable for AI model training — no Markdown, no JSON, no extra commentary.
+11. The output must look like this example:
+
+Example Output:
+aryan: Hey Siddharth, can you hear me?
+siddharth: Yeah, I can. How’s it going?
+aryan: Pretty good, just testing this bot.
+siddharth: Nice, seems to be working fine.
+
+Now, transcribe all audio using these rules.
+
     
     Each audio file belongs to a single user. Use the following mapping:
     ${uploadedFiles.map(f => `${f.username}: ${f.uri}`).join('\n')}`
+}
+
+export const promptText2 = (uploadedFiles) => {
+    return `
+Transcribe the provided audio into a JSONL format suitable for AI voice and language model training.
+
+Each audio file belongs to exactly one Discord user. Use only the exact usernames from the provided mapping.
+
+For each spoken sentence or clear speech segment, output **one JSON object** in the following format:
+{"speaker": "<username>", "text": "<spoken sentence>", "audio_file": "<audio file URI>", "emotion": "<detected emotion>", "language": "<detected language>"}
+
+### Important Rules:
+1. Use the exact usernames from the mapping. Do NOT invent, modify, or guess usernames.
+2. Each audio file belongs only to its user. Use the correct \`audio_file\` for that speaker.
+3. Do NOT include timestamps, system messages, metadata, or technical details.
+4. If any part of audio is unclear, write:
+   {"speaker": "<username>", "text": "[inaudible]", "audio_file": "<audio file URI>", "emotion": "unknown", "language": "unknown"}
+5. Keep the dialogue natural and in chronological order across all audios.
+6. Detect and include the primary emotion (e.g., "happy", "angry", "neutral", "sad", "excited") and spoken language (e.g., "English", "Hindi", "Marathi") for each line.
+7. Output only raw JSONL lines — no Markdown, no explanations, no headers, and no extra text.
+8. Each JSON object must be on a single line, properly formatted for JSONL.
+
+User mapping:
+${uploadedFiles.map(f => `${f.username}: ${f.uri}`).join('\n')}
+`
 }

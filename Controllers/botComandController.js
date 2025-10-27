@@ -1,14 +1,14 @@
 import 'dotenv/config';
 import path from 'path';
 import fs from 'fs';
-import { promptText, userStreams } from '../utils/globalVar.js';
+import { promptText, promptText2, userStreams } from '../utils/globalVar.js';
 import { fileToGenerativePart } from '../Services/fileToGenerativePart.js';
 import { getVoiceConnection } from '@discordjs/voice';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { convertToWav } from '../Services/fileConvert.js';
 import {startRecording} from '../Services/recording.js'
 import { GoogleGenAI } from "@google/genai";
-import { WriteFile } from '../Services/writeTextFile.js';
+import { WriteFile, WriteJsonFile } from '../Services/writeTextFile.js';
 
 // Gemini AI client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -96,6 +96,7 @@ export const botStopRec = async (message) => {
             }
 
             const prompt = promptText(uploadedFiles)
+            const prompt2 = promptText2(uploadedFiles)
 
             const result = await ai.models.generateContent({ 
                 model: "gemini-2.0-flash-exp",
@@ -107,11 +108,25 @@ export const botStopRec = async (message) => {
                     ]
                 }],
             });
+            const result2 = await ai.models.generateContent({
+                model: "gemini-2.0-flash-exp",
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: prompt2 },
+                            ...uploadedFiles
+                        ],
+                    },
+                ],
+            });
 
             const response = result.candidates[0].content.parts[0];
+            const response2 = result2.candidates[0].content.parts[0];
 
             // Save transcription per user
             const res = WriteFile(response);
+            const res2 =WriteJsonFile(response2)
             message.channel.send(`✔ Transcription complete! Saved to \`${path.basename(res.transcriptFile)}\``);
         
             // Send the transcription to the channel if it's not too long
@@ -142,6 +157,6 @@ export const botLeaveVC = async (message) => {
     const connection = getVoiceConnection(message.guild.id);
     if (connection) {
         connection.destroy();
-        message.reply('Left the voice channel.');
+        message.reply('🙋🏼‍♂️ Left the voice channel.');
     }
 }

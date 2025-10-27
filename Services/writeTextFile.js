@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const WriteFile = (response) => {
-    const transcriptsDir = path.join(__dirname,'..', 'transcripts');
+    const transcriptsDir = path.join(__dirname,'../assect', 'transcripts');
     fs.mkdirSync(transcriptsDir, { recursive: true });
 
     const transcriptFile = path.join(transcriptsDir, `transcript-${Date.now()}.txt`);

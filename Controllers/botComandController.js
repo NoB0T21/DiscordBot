@@ -1,13 +1,13 @@
 import 'dotenv/config';
-import {startRecording} from '../Services/recording.js'
-import { joinVoiceChannel } from '@discordjs/voice';
-import { GoogleGenAI } from "@google/genai";
+import path from 'path';
 import fs from 'fs';
 import { promptText, userStreams } from '../utils/globalVar.js';
-import { getVoiceConnection } from '@discordjs/voice';
-import path from 'path';
-import { convertToWav } from '../Services/fileConvert.js';
 import { fileToGenerativePart } from '../Services/fileToGenerativePart.js';
+import { getVoiceConnection } from '@discordjs/voice';
+import { joinVoiceChannel } from '@discordjs/voice';
+import { convertToWav } from '../Services/fileConvert.js';
+import {startRecording} from '../Services/recording.js'
+import { GoogleGenAI } from "@google/genai";
 import { WriteFile } from '../Services/writeTextFile.js';
 
 // Gemini AI client
@@ -44,7 +44,7 @@ export const botJoinVC = (message) => {
     });
 }
 
-export const botLeaveVC = async (message) => {
+export const botStopRec = async (message) => {
     if (userStreams.size === 0) return message.reply('No recordings in progress.');
         message.reply('Stopping recordings and preparing audio for Gemini...');
 
@@ -121,7 +121,7 @@ export const botLeaveVC = async (message) => {
                 message.channel.send("The transcript is too long to display here.");
             }
         } catch (err) {
-            console.error(err);
+            message.channel.send('❌ An error occurred while processing the recordings.');
         }finally {
         userStreams.clear();
         for (const rec of recordings) {
@@ -135,5 +135,13 @@ export const botLeaveVC = async (message) => {
             connection.disconnect();
             connection.destroy();
         }
+    }
+}
+
+export const botLeaveVC = async (message) => {
+    const connection = getVoiceConnection(message.guild.id);
+    if (connection) {
+        connection.destroy();
+        message.reply('Left the voice channel.');
     }
 }

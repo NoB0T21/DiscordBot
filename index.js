@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { getVoiceConnection } from '@discordjs/voice';
-import { botJoinVC, botLeaveVC } from './Controllers/botComandController.js';
+import { botJoinVC, botLeaveVC, botStopRec } from './Controllers/botComandController.js';
 
 
 // Discord client
@@ -31,16 +30,12 @@ client.on('messageCreate', async (message) => {
 
     // Leave voice channel
     if (content === '!leave') {
-        const connection = getVoiceConnection(message.guild.id);
-        if (connection) {
-            connection.destroy();
-            message.reply('Left the voice channel.');
-        }
+        botLeaveVC(message);
     }
 
     // Stop recording and upload audio to Gemini (do not delete)
     if (content === '!stop') {
-        botLeaveVC(message);
+        botStopRec(message);
     }
 });
 

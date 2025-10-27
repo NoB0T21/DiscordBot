@@ -14,7 +14,7 @@ export function startRecording(userId, username, receiver) {
         end: { behavior: EndBehaviorType.Manual }
     });
 
-    const recordingsDir = path.join(__dirname,'..', 'recordings');
+    const recordingsDir = path.join(__dirname,'../assect', 'recordings');
     fs.mkdirSync(recordingsDir, { recursive: true });
 
     const filePath = path.join(recordingsDir, `${username}-${userId}-${Date.now()}.pcm`);

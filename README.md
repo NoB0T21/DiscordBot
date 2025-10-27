@@ -155,6 +155,24 @@ Perfect for:
 
 ---
 
+## 👨‍💻 People Working on this Project
+
+**Siddharth Keer**
+💬 Data Analytics | AI Enthusiast | Discord Automation
+
+📧 [Contact on GitHub](https://github.com/Siddharth-Keer)
+   
+🔗 [LinkedIn](https://www.linkedin.com/in/siddharth-keer-30141011s003n004)
+
+**Sahil AKA (Cereal with milk-breadbutter10)**
+💬 Software engineer | AI Enthusiast | Discord Automation
+
+📧 [Contact on GitHub](https://github.com/Siddharth-Keer)
+   
+🔗 [LinkedIn](https://www.linkedin.com/in/siddharth-keer-30141011s003n004)
+
+---
+
 ## 🪪 License
 
 This project is open source under the **MIT License** — feel free to modify and share!
